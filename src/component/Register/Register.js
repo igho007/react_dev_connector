@@ -1,10 +1,19 @@
 import React, { useState } from "react";
 import { FaUsers } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { v4 } from "uuid";
+import { useAlertDispatch } from "../../context/alertContext";
+import { useAuthDispatch, useAuthState } from "../../context/authContext";
+import { REGISTER_SUCCESS, REMOVE_ALERT, SET_ALERT } from "../../context/types";
+import { register } from "../../utils/getResponse";
 
 import "./Register.scss";
 
 const Register = () => {
+  const dispatch = useAuthDispatch();
+  const { isAuthenticated } = useAuthState();
+  const navigate = useNavigate();
+  const alertDispatch = useAlertDispatch();
   const [state, setState] = useState({
     name: "",
     email: "",
@@ -13,16 +22,35 @@ const Register = () => {
   });
 
   const { name, email, password, confirmPassword } = state;
+  const id = v4();
 
   const handleChange = (e) =>
     setState({ ...state, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(state);
+    try {
+      const res = await register(name, email, password, confirmPassword);
+      dispatch({ type: REGISTER_SUCCESS, payload: res.data.user });
+      if (isAuthenticated) {
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.log(error.response.data);
+      error.response.data.errors.forEach((e) => {
+        alertDispatch({
+          type: SET_ALERT,
+          payload: { id, msg: e.msg, alertType: "danger" },
+        });
+        setTimeout(
+          () => alertDispatch({ type: REMOVE_ALERT, payload: id }),
+          5000
+        );
+      });
+    }
   };
   return (
-    <div className="app_container app__register">
+    <div className="app__register app__container">
       <h1 className="large text-primary">Sign Up</h1>
       <p className="lead">
         <FaUsers /> Create Your Account

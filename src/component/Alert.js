@@ -1,22 +1,25 @@
+import { motion } from "framer-motion";
 import React, { Fragment } from "react";
 import { useAlertState } from "../context/alertContext";
 
 const Alert = () => {
   const state = useAlertState();
   console.log(state);
+
   return (
     <Fragment>
       {state !== null &&
         state.length > 0 &&
         state.map((alert) => (
-          <div
+          <motion.div
+            whileInView={{ x: [-100, 0] }}
+            transition={{ duration: 0.5 }}
             className={`alert alert-${alert.alertType} w-25 mx-auto text-center`}
-            key={alert.id}
+            key={alert.msg}
             role="alert"
-            style={{ marginTop: "5rem" }}
           >
             {alert.msg}
-          </div>
+          </motion.div>
         ))}
     </Fragment>
   );

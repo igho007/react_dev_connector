@@ -1,24 +1,39 @@
 import React from "react";
-import { Alert, Landing, Login, Navbar, Register } from "./component";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import {
+  Alert,
+  Dashboard,
+  Landing,
+  Login,
+  Navbar,
+  Register,
+} from "./component";
+import PrivateRouter from "./privateRouter";
 
 import "./App.scss";
-import AlertProvider from "./context/alertContext";
 
 const App = () => {
   return (
     <BrowserRouter>
-      <AlertProvider>
-        <div className="app">
-          <Navbar />
+      <div className="app">
+        <Navbar />
+        <div className="">
           <Alert />
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRouter>
+                  <Dashboard />
+                </PrivateRouter>
+              }
+            />
           </Routes>
         </div>
-      </AlertProvider>
+      </div>
     </BrowserRouter>
   );
 };

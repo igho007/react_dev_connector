@@ -1,49 +1,40 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
-import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+import { v4 } from "uuid";
 import { useAlertDispatch } from "../../context/alertContext";
-import { REMOVE_ALERT, SET_ALERT } from "../../context/types";
+import { useAuthDispatch } from "../../context/authContext";
+import { LOGIN_SUCCESS, REMOVE_ALERT } from "../../context/types";
+import { login } from "../../utils/getResponse";
 
 const Login = () => {
   const [state, setState] = useState({ email: "", password: "" });
   const { email, password } = state;
   const dispatch = useAlertDispatch();
-  const id = Math.floor(Math.random() * 10000);
+  const authDispatch = useAuthDispatch();
+  const navigate = useNavigate();
+  const id = v4();
   const handleChange = (e) =>
     setState({ ...state, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(email, password);
     try {
-      const res = await axios.post(
-        "/api/user/login",
-        JSON.stringify({ email, password }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log(res);
-      dispatch({
-        type: SET_ALERT,
-        payload: {
-          id: Math.floor(Math.random() * 10000),
-          msg: res.data.msg,
-          alertType: "success",
-        },
-      });
+      const res = await login(email, password);
+      authDispatch({ type: LOGIN_SUCCESS, payload: res.data?.user });
+
+      navigate("/dashboard");
     } catch (error) {
-      console.log(error.response.data);
-      dispatch({
-        type: SET_ALERT,
-        payload: {
-          id,
-          msg: error.response?.data.msg,
-          alertType: "danger",
-        },
-      });
+      console.log(error);
+      // dispatch({
+      //   type: SET_ALERT,
+      //   payload: {
+      //     id,
+      //     msg: "Invalid username/password",
+      //     alertType: "danger",
+      //   },
+      // });
 
       setTimeout(() => dispatch({ type: REMOVE_ALERT, payload: id }), 3000);
     }
