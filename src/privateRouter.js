@@ -1,15 +1,9 @@
-import axios from "axios";
 import React from "react";
 import { Navigate } from "react-router-dom";
+import { useAuthState } from "./context/authContext";
 
 const PrivateRouter = ({ children }) => {
-  const handleRequest = async () => {
-    const res = await axios.get("api/user/auth-user");
-    const user = res.data.user;
-    return user;
-  };
-  const user = handleRequest();
-
+  const { user } = useAuthState();
   if (!user) {
     return <Navigate to="/login" />;
   }

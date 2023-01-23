@@ -22,8 +22,9 @@ const Login = () => {
     console.log(email, password);
     try {
       const res = await login(email, password);
-      authDispatch({ type: LOGIN_SUCCESS, payload: res.data?.user });
+      console.log(res);
 
+      authDispatch({ type: LOGIN_SUCCESS, payload: res.data });
       navigate("/dashboard");
     } catch (error) {
       console.log(error);

@@ -4,7 +4,6 @@ import { useAlertState } from "../context/alertContext";
 
 const Alert = () => {
   const state = useAlertState();
-  console.log(state);
 
   return (
     <Fragment>
