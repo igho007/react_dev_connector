@@ -25,6 +25,7 @@ const Login = () => {
       console.log(res);
 
       authDispatch({ type: LOGIN_SUCCESS, payload: res.data });
+
       navigate("/dashboard");
     } catch (error) {
       console.log(error);

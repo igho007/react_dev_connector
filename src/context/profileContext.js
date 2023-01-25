@@ -1,7 +1,7 @@
 import { useReducer } from "react";
 import { useContext } from "react";
 import { createContext } from "react";
-import { GET_PROFILE } from "./types";
+import { GET_PROFILE, PROFILE_ERROR } from "./types";
 
 const initialState = {
   profile: null,
@@ -17,13 +17,19 @@ const profileReducer = (state, { type, payload }) => {
   switch (type) {
     case GET_PROFILE:
       return { ...state, profile: payload };
+
+    case PROFILE_ERROR:
+      return {
+        ...state,
+        error: payload,
+      };
     default:
       return state;
   }
 };
 
 const ProifleProvider = ({ children }) => {
-  const { dispatch, state } = useReducer(profileReducer, initialState);
+  const [state, dispatch] = useReducer(profileReducer, initialState);
   return (
     <ProfileDispatch.Provider value={dispatch}>
       <ProfileState.Provider value={state}>{children}</ProfileState.Provider>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import {
   Alert,
@@ -11,8 +11,15 @@ import {
 import PrivateRouter from "./privateRouter";
 
 import "./App.scss";
+import { setAuthToken } from "./utils/setAuthToken";
 
 const App = () => {
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      console.log(123);
+      setAuthToken(localStorage.getItem("token"));
+    }
+  }, []);
   return (
     <BrowserRouter>
       <div className="app">
