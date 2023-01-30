@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import {
   Alert,
+  CreateProfile,
   Dashboard,
   Landing,
   Login,
@@ -15,16 +16,14 @@ import { setAuthToken } from "./utils/setAuthToken";
 
 const App = () => {
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      console.log(123);
-      setAuthToken(localStorage.getItem("token"));
-    }
+    console.log(123);
+    setAuthToken(localStorage.getItem("token"));
   }, []);
   return (
     <BrowserRouter>
       <div className="app">
         <Navbar />
-        <div className="">
+        <section>
           <Alert />
           <Routes>
             <Route path="/" element={<Landing />} />
@@ -38,8 +37,16 @@ const App = () => {
                 </PrivateRouter>
               }
             />
+            <Route
+              path="/create-profile"
+              element={
+                <PrivateRouter>
+                  <CreateProfile />
+                </PrivateRouter>
+              }
+            />
           </Routes>
-        </div>
+        </section>
       </div>
     </BrowserRouter>
   );

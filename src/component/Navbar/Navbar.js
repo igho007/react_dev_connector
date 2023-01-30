@@ -1,13 +1,15 @@
 import React from "react";
-import { FaCode } from "react-icons/fa";
+import { FaCode, FaSignOutAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useAuthDispatch, useAuthState } from "../../context/authContext";
-import { LOGOUT } from "../../context/types";
+import { useProfileDispatch } from "../../context/profileContext";
+import { CLEAR_PROFILE, LOGOUT } from "../../context/types";
 import "./Navbar.scss";
 
 const Navbar = () => {
   const state = useAuthState();
   const dispatch = useAuthDispatch();
+  const dispatchProfile = useProfileDispatch();
   let authLink = (
     <ul>
       <li>
@@ -16,9 +18,21 @@ const Navbar = () => {
       </li>
       <li>
         <div className="app__navbar-dot"></div>
-        <Link to="/" onClick={() => dispatch({ type: LOGOUT })}>
-          logout
-        </Link>
+        <Link to="/dashboard">Dashboard</Link>
+      </li>
+      <li>
+        <div className="app__navbar-dot"></div>
+        <FaSignOutAlt style={{ color: "#fff", marginLeft: "10px" }} />
+        <a
+          href="#!"
+          onClick={() => {
+            dispatch({ type: LOGOUT });
+            dispatchProfile({ type: CLEAR_PROFILE });
+          }}
+          style={{ marginLeft: "2px" }}
+        >
+          <span className="hide-sm">logout</span>
+        </a>
       </li>
     </ul>
   );

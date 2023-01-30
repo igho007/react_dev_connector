@@ -1,10 +1,17 @@
-import React from "react";
 import { motion } from "framer-motion";
+import React from "react";
 
+import { Link, Navigate } from "react-router-dom";
+import { useAuthState } from "../../context/authContext";
 import "./Landing.scss";
-import { Link } from "react-router-dom";
 
 const Landing = () => {
+  const { user } = useAuthState();
+
+  console.log(user);
+  if (user) {
+    return <Navigate to="/dashboard" />;
+  }
   return (
     <motion.div transition={{ duration: 0.5 }} className="app__landing">
       <div className="app__landing-overlay">
