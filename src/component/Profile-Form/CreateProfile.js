@@ -1,8 +1,20 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { Fragment, useState } from "react";
 import { FaFacebook, FaLinkedin, FaTwitter, FaYoutube } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { v4 } from "uuid";
+import { useAlertDispatch } from "../../context/alertContext";
+import { useProfileDispatch } from "../../context/profileContext";
+import {
+  CLEAR_PROFILE,
+  GET_PROFILE,
+  REMOVE_ALERT,
+  SET_ALERT,
+} from "../../context/types";
+import { axiosConfig } from "../../utils/axiosConfig";
 
 const CreateProfile = () => {
+  const id = v4();
   const [formData, setFormData] = useState({
     company: "",
     website: "",
@@ -16,6 +28,8 @@ const CreateProfile = () => {
     linkedin: "",
     youtube: "",
   });
+
+  const [displaySocial, toggleDisplaySocial] = useState(false);
 
   const {
     company,
@@ -31,8 +45,44 @@ const CreateProfile = () => {
     youtube,
   } = formData;
 
+  const profileDispatch = useProfileDispatch();
+  const alertDispatch = useAlertDispatch();
+  const navigate = useNavigate();
+
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(formData);
+    try {
+      const res = await axios.post(
+        "/api/profile/create-profile",
+        formData,
+        axiosConfig
+      );
+      console.log(res);
+      profileDispatch({ type: GET_PROFILE, payload: res.data.profile });
+      navigate("/dashboard");
+    } catch (err) {
+      const errors = err.response.data.errors;
+      if (errors) {
+        errors.forEach((e) => {
+          alertDispatch({
+            type: SET_ALERT,
+            payload: { id, msg: e.msg, alertType: "danger" },
+          });
+          setTimeout(() => {
+            alertDispatch({ type: REMOVE_ALERT, payload: id });
+          }, 3000);
+        });
+      }
+      profileDispatch({
+        type: CLEAR_PROFILE,
+        payload: { msg: err.response.statusText, status: err.response.status },
+      });
+    }
+  };
   return (
     <div className="app__container">
       <h1 className="large text-primary">Create Your Profile</h1>
@@ -41,7 +91,7 @@ const CreateProfile = () => {
         profile stand out
       </p>
       <small>* = required field</small>
-      <form className="form">
+      <form className="form" onSubmit={(e) => handleSubmit(e)}>
         <div className="form-group">
           <select
             name="status"
@@ -134,55 +184,63 @@ const CreateProfile = () => {
         </div>
 
         <div className="my-2">
-          <button type="button" className="btn btn-light">
+          <button
+            type="button"
+            className="btn btn-dark"
+            onClick={() => toggleDisplaySocial(!displaySocial)}
+          >
             Add Social Network Links
           </button>
           <span>Optional</span>
         </div>
 
-        <div className="form-group social-input">
-          <FaTwitter className="twitter icons" />
-          <input
-            type="text"
-            placeholder="Twitter URL"
-            name="twitter"
-            value={twitter}
-            onChange={(e) => handleChange(e)}
-          />
-        </div>
+        {displaySocial && (
+          <Fragment>
+            <div className="form-group social-input">
+              <FaTwitter className="twitter icons" />
+              <input
+                type="text"
+                placeholder="Twitter URL"
+                name="twitter"
+                value={twitter}
+                onChange={(e) => handleChange(e)}
+              />
+            </div>
 
-        <div className="form-group social-input">
-          <FaFacebook className="facebook icons" />
-          <input
-            type="text"
-            placeholder="Facebook URL"
-            name="facebook"
-            value={facebook}
-            onChange={(e) => handleChange(e)}
-          />
-        </div>
+            <div className="form-group social-input">
+              <FaFacebook className="facebook icons" />
+              <input
+                type="text"
+                placeholder="Facebook URL"
+                name="facebook"
+                value={facebook}
+                onChange={(e) => handleChange(e)}
+              />
+            </div>
 
-        <div className="form-group social-input">
-          <FaYoutube className="youtube icons" />
-          <input
-            type="text"
-            placeholder="YouTube URL"
-            name="youtube"
-            value={youtube}
-            onChange={(e) => handleChange(e)}
-          />
-        </div>
+            <div className="form-group social-input">
+              <FaYoutube className="youtube icons" />
+              <input
+                type="text"
+                placeholder="YouTube URL"
+                name="youtube"
+                value={youtube}
+                onChange={(e) => handleChange(e)}
+              />
+            </div>
 
-        <div className="form-group social-input">
-          <FaLinkedin className="linkedin icons" />
-          <input
-            type="text"
-            placeholder="Linkedin URL"
-            name="linkedin"
-            value={linkedin}
-            onChange={(e) => handleChange(e)}
-          />
-        </div>
+            <div className="form-group social-input">
+              <FaLinkedin className="linkedin icons" />
+              <input
+                type="text"
+                placeholder="Linkedin URL"
+                name="linkedin"
+                value={linkedin}
+                onChange={(e) => handleChange(e)}
+              />
+            </div>
+          </Fragment>
+        )}
 
         <div className="buttons d-flex justify-content-center">
           <input

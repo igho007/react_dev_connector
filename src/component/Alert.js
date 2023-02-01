@@ -1,12 +1,11 @@
 import { motion } from "framer-motion";
-import React, { Fragment } from "react";
+import React from "react";
 import { useAlertState } from "../context/alertContext";
 
 const Alert = () => {
   const state = useAlertState();
-
   return (
-    <Fragment>
+    <div className={`${state.length === 0 ? "mt-0" : "app__container"}`}>
       {state !== null &&
         state.length > 0 &&
         state.map((alert) => (
@@ -20,7 +19,7 @@ const Alert = () => {
             {alert.msg}
           </motion.div>
         ))}
-    </Fragment>
+    </div>
   );
 };
 
